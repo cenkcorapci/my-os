@@ -41,9 +41,13 @@ requires an explicit ISO path and uses QEMU with UEFI firmware; it does not
 perform an unattended install. Run checks without ArchISO/QEMU using
 `make lint test`.
 
+Follow the [integration testing procedure](docs/integration-testing.md) to
+build, boot, and record evidence for a candidate ISO. A successful build alone
+is not a validated release.
+
 GitHub Actions runs the same lint and unit-test commands on pushes and pull
-requests. The ISO build and privileged VM integration gates remain deferred
-until an isolated runner and the installer flow are available.
+requests. ISO builds and VM integration tests require a suitable Linux/ArchISO
+host and are performed manually using the documented procedure.
 
 The required `make create` release command is deliberately not implemented as
 an alias for image creation: promotion must wait for the full mandatory
@@ -57,8 +61,9 @@ integration gates and immutable release-manifest workflow described in
   user workstation CLI yet.
 - No validated Arch snapshot, release promotion, USB writer, or claim of
   reproducible/atomic system rollback.
-- No ISO build, VM boot, physical hardware test, or performance measurement has
-  been executed as part of this phase.
+- No verified ISO build or VM boot, physical hardware test, or performance
+  measurement is claimed by this phase. Record candidate build and VM boot
+  results by following the integration testing procedure.
 
 See the [architecture decisions](docs/adr/) and
 [implementation roadmap](docs/implementation-roadmap.md) before extending

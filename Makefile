@@ -17,7 +17,8 @@ doctor:
 lint:
 	$(PYTHON) -m compileall -q scripts tests
 	bash -n iso/profiledef.sh
-	bash -c 'source iso/profiledef.sh; test "$$arch" = x86_64; test "$${bootmodes[*]}" = uefi.systemd-boot'
+	grep -Fqx 'arch="x86_64"' iso/profiledef.sh
+	grep -Fqx "bootmodes=('uefi.systemd-boot')" iso/profiledef.sh
 	$(PYTHON) scripts/validate_config.py
 
 test:
