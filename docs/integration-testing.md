@@ -11,6 +11,13 @@ It is not an installer test or a release-promotion gate.
 - For VM boot testing, `qemu-system-x86_64` and `edk2-ovmf`.
 - Enough free disk space for the ISO and the temporary ArchISO work tree.
 
+Alternatively, run the **ISO candidate integration** workflow from the
+repository's GitHub Actions page. It runs `make lint test` and `make build` on
+an isolated Linux runner, checks the ISO reaches the live recovery environment
+in UEFI QEMU, and uploads the candidate and boot evidence for seven days. Only
+use the artifact from a successful workflow run; this smoke test does not
+replace the manual network and listener checks below.
+
 Do not treat an emulated build or boot as physical-hardware validation. The
 live image provides an unauthenticated root console; test only in an isolated
 VM or on hardware under controlled physical access. The QEMU procedure below

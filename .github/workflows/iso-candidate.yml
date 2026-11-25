@@ -1,0 +1,92 @@
+name: ISO candidate integration
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-boot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Build candidate with ArchISO
+        run: |
+          docker run --rm --privileged --platform linux/amd64 \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -w /workspace \
+            archlinux:latest \
+            bash -lc '
+              set -euo pipefail
+              sed -i "s/^#DisableSandboxSyscalls/DisableSandboxSyscalls/" /etc/pacman.conf
+              pacman -Syu --noconfirm archlinux-keyring
+              pacman -S --noconfirm archiso python make
+              make lint test
+              make build
+            '
+
+      - name: Record candidate checksum
+        id: candidate
+        run: |
+          set -euo pipefail
+          iso="$(find dist/candidate -type f -name '*.iso' -print -quit)"
+          test -n "$iso"
+          file "$iso"
+          sha256sum "$iso" | tee dist/candidate/SHA256SUMS
+          echo "iso_path=$GITHUB_WORKSPACE/$iso" >> "$GITHUB_OUTPUT"
+
+      - name: Upload candidate ISO
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: personal-arch-candidate
+          path: dist/candidate/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Install UEFI VM test tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            imagemagick ovmf qemu-system-gui qemu-system-x86 tesseract-ocr xvfb
+
+      - name: Boot candidate in UEFI QEMU
+        env:
+          ISO: ${{ steps.candidate.outputs.iso_path }}
+        run: |
+          set -euo pipefail
+          test -s "$ISO"
+          test -f /usr/share/OVMF/OVMF_CODE.fd
+          test -f /usr/share/OVMF/OVMF_VARS.fd
+          timeout 180 xvfb-run --auto-servernum --server-args="-screen 0 1280x800x24" \
+            bash -euo pipefail -c '
+              make boot ISO="$ISO" > /tmp/qemu-boot.log 2>&1 &
+              qemu_pid=$!
+              trap "kill $qemu_pid 2>/dev/null || true; wait $qemu_pid 2>/dev/null || true" EXIT
+              for attempt in $(seq 1 30); do
+                sleep 5
+                import -display "$DISPLAY" -window root /tmp/iso-boot.png
+                text="$(tesseract /tmp/iso-boot.png stdout 2>/dev/null || true)"
+                if printf "%s\n" "$text" | grep -qi "Personal Arch live recovery environment"; then
+                  printf "%s\n" "$text"
+                  exit 0
+                fi
+              done
+              cat /tmp/qemu-boot.log
+              printf "%s\n" "$text"
+              exit 1
+            '
+
+      - name: Upload UEFI boot evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: personal-arch-boot-evidence
+          path: |
+            /tmp/qemu-boot.log
+            /tmp/iso-boot.png
+          if-no-files-found: ignore
+          retention-days: 7

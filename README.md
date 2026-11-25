@@ -46,8 +46,9 @@ build, boot, and record evidence for a candidate ISO. A successful build alone
 is not a validated release.
 
 GitHub Actions runs the same lint and unit-test commands on pushes and pull
-requests. ISO builds and VM integration tests require a suitable Linux/ArchISO
-host and are performed manually using the documented procedure.
+requests. The manually triggered **ISO candidate integration** workflow builds
+with ArchISO, runs a UEFI QEMU boot smoke test, and uploads a short-lived
+candidate artifact. It is not a release or installer validation.
 
 The required `make create` release command is deliberately not implemented as
 an alias for image creation: promotion must wait for the full mandatory
