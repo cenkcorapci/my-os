@@ -8,8 +8,8 @@
     },
     {
       "name": "developer",
-      "status": "planned",
-      "purpose": "General-purpose development workstation."
+      "status": "implemented",
+      "purpose": "C++ and CUDA command-line development; GPU execution requires compatible NVIDIA hardware and drivers."
     },
     {
       "name": "cloud",

@@ -42,6 +42,14 @@ class BootIsoTests(unittest.TestCase):
             with patch("scripts.boot_iso.FIRMWARE_PAIRS", ((code, code.with_name("missing.fd")),)):
                 self.assertIsNone(find_uefi_firmware())
 
+    def test_selects_explicit_firmware_pair(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            code = Path(temp_dir) / "code.fd"
+            variables = Path(temp_dir) / "vars.fd"
+            code.touch()
+            variables.touch()
+            self.assertEqual(find_uefi_firmware(code, variables), (code, variables))
+
 
 class ConfigurationTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -56,6 +64,20 @@ class ConfigurationTests(unittest.TestCase):
 
     def test_checked_in_manifests_are_consistent(self) -> None:
         self.assertEqual(validate_repository(), [])
+
+    def test_developer_profile_includes_cpp_and_cuda_toolchains(self) -> None:
+        developer = next(
+            profile for profile in self.profiles["profiles"] if profile["name"] == "developer"
+        )
+        self.assertEqual(developer["status"], "implemented")
+        packages = {
+            package["name"]
+            for package in self.packages["packages"]
+            if "developer" in package["profiles"] and package["iso"]
+        }
+        self.assertTrue(
+            {"ccache", "clang", "cmake", "cuda", "gcc", "gdb", "make", "ninja"} <= packages
+        )
 
     def test_archiso_includes_required_packages_and_uefi_boot_files(self) -> None:
         self.assertTrue(ARCHISO_REQUIRED_PACKAGES <= self.iso_packages)

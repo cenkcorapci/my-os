@@ -4,3 +4,6 @@ This image logs in as root on the local console. No SSH server is enabled.
 No disks are modified unless you explicitly run an installer (not included yet).
 
 Use `nmtui` or `nmcli` to connect to a network.
+
+C++ tools: g++, clang++, cmake, ninja, gdb.
+CUDA compiler: nvcc. GPU execution requires compatible NVIDIA hardware and drivers.

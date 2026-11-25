@@ -23,6 +23,48 @@
       "reason": "Minimal Arch Linux userspace."
     },
     {
+      "name": "ccache",
+      "manager": "pacman",
+      "profiles": ["developer"],
+      "iso": true,
+      "reason": "Compiler cache utility for projects configured to use ccache."
+    },
+    {
+      "name": "clang",
+      "manager": "pacman",
+      "profiles": ["developer"],
+      "iso": true,
+      "reason": "Provides an alternate C and C++ compiler toolchain."
+    },
+    {
+      "name": "cmake",
+      "manager": "pacman",
+      "profiles": ["developer"],
+      "iso": true,
+      "reason": "Build-system support for C++ and CUDA projects."
+    },
+    {
+      "name": "cuda",
+      "manager": "pacman",
+      "profiles": ["developer"],
+      "iso": true,
+      "reason": "NVIDIA CUDA toolkit, including nvcc and CUDA development libraries."
+    },
+    {
+      "name": "gcc",
+      "manager": "pacman",
+      "profiles": ["developer"],
+      "iso": true,
+      "reason": "GNU C and C++ compilers."
+    },
+    {
+      "name": "gdb",
+      "manager": "pacman",
+      "profiles": ["developer"],
+      "iso": true,
+      "reason": "Debugger for C++ applications and optional cuda-gdb support."
+    },
+    {
       "name": "git",
       "manager": "pacman",
       "profiles": ["minimal"],
@@ -42,6 +84,13 @@
       "profiles": ["minimal"],
       "iso": true,
       "reason": "Arch Linux kernel for the live environment."
+    },
+    {
+      "name": "make",
+      "manager": "pacman",
+      "profiles": ["developer"],
+      "iso": true,
+      "reason": "Runs Make-based C++ and CUDA project builds."
     },
     {
       "name": "linux-firmware",
@@ -77,6 +126,20 @@
       "profiles": ["minimal"],
       "iso": true,
       "reason": "Runtime for the future guided installer and provisioning tools."
+    },
+    {
+      "name": "ninja",
+      "manager": "pacman",
+      "profiles": ["developer"],
+      "iso": true,
+      "reason": "Fast build backend for CMake projects."
+    },
+    {
+      "name": "pkgconf",
+      "manager": "pacman",
+      "profiles": ["developer"],
+      "iso": true,
+      "reason": "Resolves compiler and linker flags for native development libraries."
     },
     {
       "name": "reflector",

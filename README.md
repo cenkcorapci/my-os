@@ -6,13 +6,11 @@ release**.
 
 ## Phase-one foundation
 
-The initial implementation establishes a small UEFI systemd-boot ArchISO
-profile, a package ownership manifest, a system-service policy manifest, and
-repeatable local checks. The live image is intended to boot to a
-local root recovery shell with NetworkManager enabled and no SSH server; it
-does not yet install Personal Arch to a disk or configure a desktop. The live
-console is intentionally unauthenticated, as with standard Arch installation
-media, and should only be booted where physical access is controlled.
+The current UEFI systemd-boot ArchISO boots to a local root shell with
+NetworkManager, C++ tools, and the CUDA toolkit (`nvcc`). It does not install
+Personal Arch to a disk or configure a desktop. The live console is
+intentionally unauthenticated, as with standard Arch installation media, and
+should only be booted where physical access is controlled.
 
 The package manifest is the source of truth for package ownership. A package
 must have one manager (`pacman`, `nix`, `aur`, or `flatpak`); packages included
@@ -24,7 +22,9 @@ declaring ownership or service defaults.
 ## Requirements and commands
 
 Use an x86_64 Arch Linux build host with `archiso` and Python 3. `qemu-system-x86`
-and `edk2-ovmf` are needed to boot the resulting image in UEFI mode.
+and `edk2-ovmf` are needed to boot the resulting image in UEFI mode. On macOS,
+install QEMU with `brew install qemu`; if OVMF is not installed on the host,
+pass the firmware code and variable files via `UEFI_CODE` and `UEFI_VARS`.
 
 ```sh
 make help
@@ -33,13 +33,31 @@ make lint
 make test
 sudo make build
 make boot ISO=/absolute/path/to/candidate.iso
+make vm
 ```
 
 `make build` creates an unpublished candidate under `dist/candidate/` and keeps
 its working directory under `dist/work/`. Builds are serialized. `make boot`
 requires an explicit ISO path and uses QEMU with UEFI firmware; it does not
-perform an unattended install. Run checks without ArchISO/QEMU using
-`make lint test`.
+perform an unattended install. `make vm` selects the newest candidate ISO by
+default and allocates 8 GiB RAM and 4 CPUs; override with `ISO=PATH`,
+`VM_RAM=MiB`, and `VM_CPUS=N`. For example:
+
+```sh
+make vm ISO=/path/to/candidate.iso VM_RAM=6144 VM_CPUS=4 \
+  UEFI_CODE=/path/to/OVMF_CODE.fd UEFI_VARS=/path/to/OVMF_VARS.fd
+```
+
+On Apple Silicon, the x86_64 VM runs under software emulation and is slower
+than native execution. The CUDA toolkit enables CUDA code compilation, but
+this VM does not provide GPU passthrough; executing kernels requires compatible
+NVIDIA hardware and a matching driver. The live root filesystem is ephemeral,
+so changes made inside the VM are lost when it shuts down. `make toolchain-check`
+compiles and runs a small C++ program and compiles a CUDA kernel without running
+it; run it from a checkout inside the live environment.
+
+The CUDA package adds about 2.7 GB compressed and 5.4 GB installed, so the ISO
+and build/download time are substantially larger than a recovery-only image.
 
 Follow the [integration testing procedure](docs/integration-testing.md) to
 build, boot, and record evidence for a candidate ISO. A successful build alone
@@ -58,13 +76,14 @@ integration gates and immutable release-manifest workflow described in
 ## Current limitations
 
 - No disk installer, partitioning, encryption, or destructive storage code.
-- No desktop, hardware-driver selection, Nix/Home Manager, Ansible roles, or
-  user workstation CLI yet.
+- No desktop, NVIDIA kernel-driver selection, Nix/Home Manager, Ansible roles,
+  or user workstation CLI yet.
 - No validated Arch snapshot, release promotion, USB writer, or claim of
   reproducible/atomic system rollback.
-- The candidate ISO has booted to the recovery shell in UEFI QEMU. Network and
-  listener checks from the integration procedure, physical hardware testing,
-  and performance measurements are still outstanding.
+- A previous recovery-only candidate booted in UEFI QEMU. The expanded
+  C++/CUDA candidate still needs its build, boot, and toolchain integration
+  checks, as well as network/listener checks, physical hardware testing, and
+  performance measurements.
 
 See the [architecture decisions](docs/adr/) and
 [implementation roadmap](docs/implementation-roadmap.md) before extending

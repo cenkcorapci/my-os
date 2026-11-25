@@ -27,6 +27,16 @@ jobs:
               pacman -S --noconfirm archiso python make
               make lint test
               make build
+              rootfs="$(find dist/work -type d -path "*/x86_64/airootfs" -print -quit)"
+              test -n "$rootfs"
+              mkdir -p "$rootfs/tmp/personal-arch-toolchain-check/examples/cpp" \
+                "$rootfs/tmp/personal-arch-toolchain-check/examples/cuda"
+              cp Makefile "$rootfs/tmp/personal-arch-toolchain-check/Makefile"
+              cp examples/cpp/hello.cpp "$rootfs/tmp/personal-arch-toolchain-check/examples/cpp/hello.cpp"
+              cp examples/cuda/hello.cu "$rootfs/tmp/personal-arch-toolchain-check/examples/cuda/hello.cu"
+              mount --bind /dev "$rootfs/dev"
+              mount -t proc proc "$rootfs/proc"
+              chroot "$rootfs" /usr/bin/make -C /tmp/personal-arch-toolchain-check toolchain-check
             '
 
       - name: Record candidate checksum

@@ -10,13 +10,16 @@ It is not an installer test or a release-promotion gate.
 - Root privileges for `mkarchiso` (`sudo make build`).
 - For VM boot testing, `qemu-system-x86_64` and `edk2-ovmf`.
 - Enough free disk space for the ISO and the temporary ArchISO work tree.
+- The CUDA package requires about 2.7 GB compressed and 5.4 GB installed;
+  reserve additional space for package caches, the ISO, and the build tree.
 
 Alternatively, run the **ISO candidate integration** workflow from the
 repository's GitHub Actions page. It runs `make lint test` and `make build` on
-an isolated Linux runner, checks the ISO reaches the live recovery environment
-in UEFI QEMU, and uploads the candidate and boot evidence for seven days. Only
-use the artifact from a successful workflow run; this smoke test does not
-replace the manual network and listener checks below.
+an isolated Linux runner, compiles the C++ and CUDA smoke tests in the built
+image, checks the ISO reaches the live recovery environment in UEFI QEMU, and
+uploads the candidate and boot evidence for seven days. Only use the artifact
+from a successful workflow run; this smoke test does not replace the manual
+network and listener checks below.
 
 Do not treat an emulated build or boot as physical-hardware validation. The
 live image provides an unauthenticated root console; test only in an isolated
@@ -58,6 +61,12 @@ Run the project boot target:
 make boot ISO="$ISO"
 ```
 
+For a developer-sized local VM, use `make vm ISO="$ISO"` instead. It defaults
+to 8 GiB RAM and 4 CPUs; adjust with `VM_RAM` and `VM_CPUS`. On macOS, provide
+`UEFI_CODE` and `UEFI_VARS` if the host does not have discoverable OVMF files.
+Apple Silicon runs the x86_64 guest under software emulation, and the VM has no
+CUDA GPU passthrough.
+
 In the VM, verify all of the following before stopping it:
 
 1. The UEFI systemd-boot menu appears and offers the Personal Arch live entry.
@@ -80,6 +89,18 @@ In the VM, verify all of the following before stopping it:
    not be listening by default.
 6. The VM has no attached writable disk and no installer or disk changes are
    attempted.
+7. Check the developer toolchain from a checkout of this repository inside the
+   live environment:
+
+   ```sh
+   git clone --depth 1 https://github.com/cenkcorapci/my-os /tmp/my-os
+   cd /tmp/my-os
+   make toolchain-check
+   ```
+
+   The test compiles and runs a C++ program, then compiles a CUDA kernel. It
+   does not run the kernel; GPU execution requires compatible NVIDIA hardware
+   and a matching driver, neither of which is supplied by the VM.
 
 The shell is intentionally unauthenticated and is not evidence of an installed
 workstation. Exit QEMU after collecting the observations; its UEFI variables
@@ -95,6 +116,7 @@ NetworkManager, unexpected listener, or writable VM disk is a failed
 integration run: retain the candidate only for diagnosis and do not describe it
 as validated.
 
-A passing run demonstrates only candidate construction and the live UEFI VM
-boot path. It does not validate installation, persistence, disk handling,
-physical hardware, package snapshot reproducibility, or release promotion.
+A passing run demonstrates only candidate construction, the live UEFI VM boot
+path, and the compiler toolchain. It does not validate installation,
+persistence, disk handling, CUDA execution, physical hardware, package
+snapshot reproducibility, or release promotion.
