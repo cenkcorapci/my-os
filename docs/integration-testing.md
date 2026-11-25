@@ -61,8 +61,8 @@ make boot ISO="$ISO"
 In the VM, verify all of the following before stopping it:
 
 1. The UEFI systemd-boot menu appears and offers the Personal Arch live entry.
-2. The live kernel starts without a panic and reaches the tty1 root recovery
-   shell without prompting for a password.
+2. The live kernel starts without a panic or first-boot setup prompt and reaches
+   the tty1 root recovery shell without prompting for a password.
 3. `systemctl is-active NetworkManager` returns `active`.
 4. `ip link` shows a usable virtual network interface. With QEMU user-mode
    networking and working host connectivity, verify DHCP, routing, DNS, and a

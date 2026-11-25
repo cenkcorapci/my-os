@@ -65,6 +65,17 @@ class ConfigurationTests(unittest.TestCase):
         )
         initramfs_config = ROOT / "iso/airootfs/etc/mkinitcpio.conf.d/archiso.conf"
         self.assertIn("archiso", initramfs_config.read_text(encoding="utf-8"))
+        firstboot_mask = (
+            ROOT / "iso/airootfs/etc/systemd/system/systemd-firstboot.service"
+        )
+        self.assertTrue(firstboot_mask.is_symlink())
+        self.assertEqual(firstboot_mask.readlink(), Path("/dev/null"))
+        gpt_auto_mask = (
+            ROOT
+            / "iso/airootfs/etc/systemd/system-generators/systemd-gpt-auto-generator"
+        )
+        self.assertTrue(gpt_auto_mask.is_symlink())
+        self.assertEqual(gpt_auto_mask.readlink(), Path("/dev/null"))
         network_manager_link = (
             ROOT
             / "iso/airootfs/etc/systemd/system/multi-user.target.wants/NetworkManager.service"

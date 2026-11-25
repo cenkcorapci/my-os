@@ -235,6 +235,28 @@ def validate_repository(
         initramfs_config.read_text(encoding="utf-8"),
     ):
         errors.append("ArchISO initramfs hook must be enabled in the profile overlay")
+    firstboot_mask = (
+        ROOT
+        / "iso"
+        / "airootfs"
+        / "etc"
+        / "systemd"
+        / "system"
+        / "systemd-firstboot.service"
+    )
+    if not firstboot_mask.is_symlink() or str(firstboot_mask.readlink()) != "/dev/null":
+        errors.append("Interactive systemd first-boot setup must be masked in the live image")
+    gpt_auto_mask = (
+        ROOT
+        / "iso"
+        / "airootfs"
+        / "etc"
+        / "systemd"
+        / "system-generators"
+        / "systemd-gpt-auto-generator"
+    )
+    if not gpt_auto_mask.is_symlink() or str(gpt_auto_mask.readlink()) != "/dev/null":
+        errors.append("systemd GPT auto-root discovery must be masked in the live image")
     if not network_manager_link.is_symlink() or str(network_manager_link.readlink()) != (
         "/usr/lib/systemd/system/NetworkManager.service"
     ):
