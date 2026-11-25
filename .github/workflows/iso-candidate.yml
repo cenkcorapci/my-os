@@ -36,7 +36,7 @@ jobs:
               cp examples/cuda/hello.cu "$rootfs/tmp/personal-arch-toolchain-check/examples/cuda/hello.cu"
               mount --bind /dev "$rootfs/dev"
               mount -t proc proc "$rootfs/proc"
-              chroot "$rootfs" /usr/bin/make -C /tmp/personal-arch-toolchain-check toolchain-check
+              chroot "$rootfs" /usr/bin/bash -lc "make -C /tmp/personal-arch-toolchain-check toolchain-check"
             '
 
       - name: Record candidate checksum
