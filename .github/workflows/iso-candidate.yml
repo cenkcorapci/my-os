@@ -33,6 +33,7 @@ jobs:
         id: candidate
         run: |
           set -euo pipefail
+          sudo chown -R "$(id -u):$(id -g)" dist/candidate
           iso="$(find dist/candidate -type f -name '*.iso' -print -quit)"
           test -n "$iso"
           file "$iso"
