@@ -225,6 +225,22 @@ def validate_repository(
     live_shadow = ROOT / "iso" / "airootfs" / "etc" / "shadow"
     if not autologin_config.is_file() or not live_shadow.is_file():
         errors.append("Local recovery-shell autologin configuration is incomplete")
+    if live_shadow.is_file():
+        root_entry = next(
+            (
+                line.split(":")
+                for line in live_shadow.read_text(encoding="utf-8").splitlines()
+                if line.startswith("root:")
+            ),
+            None,
+        )
+        if (
+            root_entry is None
+            or len(root_entry) < 9
+            or not root_entry[2].isdigit()
+            or int(root_entry[2]) <= 0
+        ):
+            errors.append("Live root account must not require a password change at autologin")
     initramfs_config = (
         ROOT / "iso" / "airootfs" / "etc" / "mkinitcpio.conf.d" / "archiso.conf"
     )

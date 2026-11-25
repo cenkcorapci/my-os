@@ -91,6 +91,16 @@ class ConfigurationTests(unittest.TestCase):
         )
         self.assertTrue((ROOT / "iso/airootfs/etc/shadow").is_file())
 
+    def test_live_root_autologin_does_not_require_password_change(self) -> None:
+        root_shadow = next(
+            line.split(":")
+            for line in (
+                ROOT / "iso/airootfs/etc/shadow"
+            ).read_text(encoding="utf-8").splitlines()
+            if line.startswith("root:")
+        )
+        self.assertGreater(int(root_shadow[2]), 0)
+
     def test_package_cannot_have_multiple_owners(self) -> None:
         packages = copy.deepcopy(self.packages)
         duplicate = copy.deepcopy(packages["packages"][0])
