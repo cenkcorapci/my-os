@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "services": [
+    {
+      "name": "NetworkManager.service",
+      "activation": "enabled",
+      "purpose": "Network connectivity for the installed workstation.",
+      "listeners": [],
+      "dependencies": [],
+      "security_implications": "Manages network interfaces; wireless credentials must not be logged."
+    },
+    {
+      "name": "systemd-timesyncd.service",
+      "activation": "enabled",
+      "purpose": "Synchronizes system time.",
+      "listeners": [],
+      "dependencies": ["network-online.target"],
+      "security_implications": "Uses configured network time sources; accurate time is required for TLS."
+    },
+    {
+      "name": "docker.service",
+      "activation": "disabled",
+      "purpose": "Optional container workloads; start only when requested.",
+      "listeners": [],
+      "dependencies": [],
+      "security_implications": "Published container ports may bypass host firewall expectations; Docker access can grant root-equivalent privileges."
+    },
+    {
+      "name": "sshd.service",
+      "activation": "disabled",
+      "purpose": "SSH server is not enabled by default.",
+      "listeners": [],
+      "dependencies": [],
+      "security_implications": "Enabling exposes a remote login surface; configure keys and firewall rules first."
+    },
+    {
+      "name": "tailscaled.service",
+      "activation": "disabled",
+      "purpose": "Optional Tailscale VPN, activated explicitly.",
+      "listeners": [],
+      "dependencies": [],
+      "security_implications": "May alter routing and DNS; do not activate alongside another VPN without an explicit routing plan."
+    },
+    {
+      "name": "netbird.service",
+      "activation": "disabled",
+      "purpose": "Optional NetBird VPN, activated explicitly.",
+      "listeners": [],
+      "dependencies": [],
+      "security_implications": "May alter routing and DNS; do not activate alongside another VPN without an explicit routing plan."
+    },
+    {
+      "name": "postgresql.service",
+      "activation": "disabled",
+      "purpose": "Optional local development database.",
+      "listeners": [],
+      "dependencies": [],
+      "security_implications": "Database listeners must remain local unless deliberately exposed."
+    },
+    {
+      "name": "redis.service",
+      "activation": "disabled",
+      "purpose": "Optional local development cache.",
+      "listeners": [],
+      "dependencies": [],
+      "security_implications": "Cache listeners must remain local unless deliberately exposed."
+    },
+    {
+      "name": "cups.service",
+      "activation": "disabled",
+      "purpose": "Optional printing service.",
+      "listeners": [],
+      "dependencies": [],
+      "security_implications": "Network printing can expose local services and device metadata."
+    },
+    {
+      "name": "avahi-daemon.service",
+      "activation": "disabled",
+      "purpose": "Optional multicast DNS service discovery.",
+      "listeners": [],
+      "dependencies": [],
+      "security_implications": "Advertises and discovers services on the local network."
+    },
+    {
+      "name": "nix-daemon.service",
+      "activation": "conditional",
+      "purpose": "Runs only when the Nix development environment is installed.",
+      "listeners": [],
+      "dependencies": [],
+      "security_implications": "Privileged build service; restrict access to trusted local users and reviewed Nix configuration."
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "packages": [
+    {
+      "name": "amd-ucode",
+      "manager": "pacman",
+      "profiles": ["minimal"],
+      "iso": true,
+      "reason": "AMD processor microcode updates."
+    },
+    {
+      "name": "archinstall",
+      "manager": "pacman",
+      "profiles": ["minimal"],
+      "iso": true,
+      "reason": "Provides Arch installation primitives for the future guided installer."
+    },
+    {
+      "name": "base",
+      "manager": "pacman",
+      "profiles": ["minimal"],
+      "iso": true,
+      "reason": "Minimal Arch Linux userspace."
+    },
+    {
+      "name": "git",
+      "manager": "pacman",
+      "profiles": ["minimal"],
+      "iso": true,
+      "reason": "Source-control access for recovery and provisioning."
+    },
+    {
+      "name": "intel-ucode",
+      "manager": "pacman",
+      "profiles": ["minimal"],
+      "iso": true,
+      "reason": "Intel processor microcode updates."
+    },
+    {
+      "name": "linux",
+      "manager": "pacman",
+      "profiles": ["minimal"],
+      "iso": true,
+      "reason": "Arch Linux kernel for the live environment."
+    },
+    {
+      "name": "linux-firmware",
+      "manager": "pacman",
+      "profiles": ["minimal"],
+      "iso": true,
+      "reason": "Firmware needed by common network and storage hardware."
+    },
+    {
+      "name": "mkinitcpio",
+      "manager": "pacman",
+      "profiles": ["minimal"],
+      "iso": true,
+      "reason": "Required by ArchISO to generate the live initramfs."
+    },
+    {
+      "name": "mkinitcpio-archiso",
+      "manager": "pacman",
+      "profiles": ["minimal"],
+      "iso": true,
+      "reason": "ArchISO initramfs hooks required by the live image."
+    },
+    {
+      "name": "networkmanager",
+      "manager": "pacman",
+      "profiles": ["minimal"],
+      "iso": true,
+      "reason": "Network-first live environment and interactive nmtui setup."
+    },
+    {
+      "name": "python",
+      "manager": "pacman",
+      "profiles": ["minimal"],
+      "iso": true,
+      "reason": "Runtime for the future guided installer and provisioning tools."
+    },
+    {
+      "name": "reflector",
+      "manager": "pacman",
+      "profiles": ["minimal"],
+      "iso": true,
+      "reason": "Mirror selection support for the future installer."
+    },
+    {
+      "name": "vim",
+      "manager": "pacman",
+      "profiles": ["minimal"],
+      "iso": true,
+      "reason": "Basic editor for recovery and live-session configuration."
+    }
+  ]
+}
