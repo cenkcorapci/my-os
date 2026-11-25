@@ -63,6 +63,8 @@ class ConfigurationTests(unittest.TestCase):
         self.assertTrue(
             (ROOT / "iso/efiboot/loader/entries/01-personal-arch-linux.conf").is_file()
         )
+        initramfs_config = ROOT / "iso/airootfs/etc/mkinitcpio.conf.d/archiso.conf"
+        self.assertIn("archiso", initramfs_config.read_text(encoding="utf-8"))
         network_manager_link = (
             ROOT
             / "iso/airootfs/etc/systemd/system/multi-user.target.wants/NetworkManager.service"

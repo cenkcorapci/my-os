@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from collections import Counter
 from pathlib import Path
@@ -224,6 +225,16 @@ def validate_repository(
     live_shadow = ROOT / "iso" / "airootfs" / "etc" / "shadow"
     if not autologin_config.is_file() or not live_shadow.is_file():
         errors.append("Local recovery-shell autologin configuration is incomplete")
+    initramfs_config = (
+        ROOT / "iso" / "airootfs" / "etc" / "mkinitcpio.conf.d" / "archiso.conf"
+    )
+    if not initramfs_config.is_file():
+        errors.append(f"ArchISO initramfs configuration is missing: {initramfs_config}")
+    elif not re.search(
+        r"(?m)^HOOKS=\([^)]*\barchiso\b[^)]*\)$",
+        initramfs_config.read_text(encoding="utf-8"),
+    ):
+        errors.append("ArchISO initramfs hook must be enabled in the profile overlay")
     if not network_manager_link.is_symlink() or str(network_manager_link.readlink()) != (
         "/usr/lib/systemd/system/NetworkManager.service"
     ):
