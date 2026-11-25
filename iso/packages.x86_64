@@ -1,0 +1,13 @@
+amd-ucode
+archinstall
+base
+git
+intel-ucode
+linux
+linux-firmware
+mkinitcpio
+mkinitcpio-archiso
+networkmanager
+python
+reflector
+vim

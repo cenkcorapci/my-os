@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "profiles": [
+    {
+      "name": "minimal",
+      "status": "implemented",
+      "purpose": "Small network-capable live ISO foundation."
+    },
+    {
+      "name": "developer",
+      "status": "planned",
+      "purpose": "General-purpose development workstation."
+    },
+    {
+      "name": "cloud",
+      "status": "planned",
+      "purpose": "Cloud and infrastructure development tools."
+    },
+    {
+      "name": "data-engineering",
+      "status": "planned",
+      "purpose": "Data engineering and local service clients."
+    },
+    {
+      "name": "ml",
+      "status": "planned",
+      "purpose": "Machine learning tools and optional accelerators."
+    },
+    {
+      "name": "quant",
+      "status": "planned",
+      "purpose": "Quantitative research and data analysis."
+    },
+    {
+      "name": "full",
+      "status": "planned",
+      "purpose": "Opt-in superset of workstation development profiles."
+    }
+  ]
+}
