@@ -23,8 +23,9 @@ declaring ownership or service defaults.
 
 Use an x86_64 Arch Linux build host with `archiso` and Python 3. `qemu-system-x86`
 and `edk2-ovmf` are needed to boot the resulting image in UEFI mode. On macOS,
-install QEMU with `brew install qemu`; if OVMF is not installed on the host,
-pass the firmware code and variable files via `UEFI_CODE` and `UEFI_VARS`.
+install QEMU with `brew install qemu`; Homebrew QEMU does not bundle OVMF, so
+use an existing OVMF/EDK2 code and variable firmware pair with `UEFI_CODE` and
+`UEFI_VARS`.
 
 ```sh
 make help
@@ -56,8 +57,8 @@ so changes made inside the VM are lost when it shuts down. `make toolchain-check
 compiles and runs a small C++ program and compiles a CUDA kernel without running
 it; run it from a checkout inside the live environment.
 
-The CUDA package adds about 2.7 GB compressed and 5.4 GB installed, so the ISO
-and build/download time are substantially larger than a recovery-only image.
+The CUDA package adds about 2.7 GB compressed and 5.4 GB installed; the hosted
+candidate ISO is about 4.6 GB, substantially larger than a recovery-only image.
 
 Follow the [integration testing procedure](docs/integration-testing.md) to
 build, boot, and record evidence for a candidate ISO. A successful build alone
@@ -80,10 +81,9 @@ integration gates and immutable release-manifest workflow described in
   or user workstation CLI yet.
 - No validated Arch snapshot, release promotion, USB writer, or claim of
   reproducible/atomic system rollback.
-- A previous recovery-only candidate booted in UEFI QEMU. The expanded
-  C++/CUDA candidate still needs its build, boot, and toolchain integration
-  checks, as well as network/listener checks, physical hardware testing, and
-  performance measurements.
+- The expanded C++/CUDA candidate built, passed compiler smoke checks, and
+  booted in UEFI QEMU. Manual network/listener checks, physical hardware
+  testing, and performance measurements remain outstanding.
 
 See the [architecture decisions](docs/adr/) and
 [implementation roadmap](docs/implementation-roadmap.md) before extending
