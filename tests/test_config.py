@@ -5,7 +5,9 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
+from scripts.boot_iso import find_uefi_firmware
 from scripts.validate_config import (
     ARCHISO_REQUIRED_PACKAGES,
     ROOT,
@@ -13,6 +15,32 @@ from scripts.validate_config import (
     validate_repository,
     validate_services,
 )
+
+
+class BootIsoTests(unittest.TestCase):
+    def test_selects_first_complete_firmware_pair(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            code = root / "OVMF_CODE.fd"
+            variables = root / "OVMF_VARS.fd"
+            code.touch()
+            variables.touch()
+            later_code = root / "later_CODE.fd"
+            later_variables = root / "later_VARS.fd"
+            later_code.touch()
+            later_variables.touch()
+            with patch(
+                "scripts.boot_iso.FIRMWARE_PAIRS",
+                ((code, variables), (later_code, later_variables)),
+            ):
+                self.assertEqual(find_uefi_firmware(), (code, variables))
+
+    def test_ignores_incomplete_firmware_pair(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            code = Path(temp_dir) / "OVMF_CODE.fd"
+            code.touch()
+            with patch("scripts.boot_iso.FIRMWARE_PAIRS", ((code, code.with_name("missing.fd")),)):
+                self.assertIsNone(find_uefi_firmware())
 
 
 class ConfigurationTests(unittest.TestCase):

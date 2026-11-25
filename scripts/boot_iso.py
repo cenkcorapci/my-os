@@ -17,10 +17,21 @@ FIRMWARE_PAIRS = (
         Path("/usr/share/edk2/x64/OVMF_VARS.4m.fd"),
     ),
     (
+        Path("/usr/share/OVMF/OVMF_CODE_4M.fd"),
+        Path("/usr/share/OVMF/OVMF_VARS_4M.fd"),
+    ),
+    (
         Path("/usr/share/OVMF/OVMF_CODE.fd"),
         Path("/usr/share/OVMF/OVMF_VARS.fd"),
     ),
 )
+
+
+def find_uefi_firmware() -> tuple[Path, Path] | None:
+    return next(
+        ((code, variables) for code, variables in FIRMWARE_PAIRS if code.is_file() and variables.is_file()),
+        None,
+    )
 
 
 def main() -> int:
@@ -35,10 +46,7 @@ def main() -> int:
     if not qemu:
         print("ERROR: qemu-system-x86_64 not found.", file=sys.stderr)
         return 1
-    firmware = next(
-        ((code, variables) for code, variables in FIRMWARE_PAIRS if code.is_file() and variables.is_file()),
-        None,
-    )
+    firmware = find_uefi_firmware()
     if firmware is None:
         print("ERROR: UEFI OVMF firmware not found; install edk2-ovmf.", file=sys.stderr)
         return 1

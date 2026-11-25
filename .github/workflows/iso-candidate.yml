@@ -60,23 +60,27 @@ jobs:
         run: |
           set -euo pipefail
           test -s "$ISO"
-          test -f /usr/share/OVMF/OVMF_CODE.fd
-          test -f /usr/share/OVMF/OVMF_VARS.fd
+          ls -l /usr/share/OVMF /usr/share/edk2/x64 2>/dev/null || true
+          mkdir -p dist/boot-evidence
           timeout 180 xvfb-run --auto-servernum --server-args="-screen 0 1280x800x24" \
             bash -euo pipefail -c '
-              make boot ISO="$ISO" > /tmp/qemu-boot.log 2>&1 &
+              make boot ISO="$ISO" > "$GITHUB_WORKSPACE/dist/boot-evidence/qemu-boot.log" 2>&1 &
               qemu_pid=$!
               trap "kill $qemu_pid 2>/dev/null || true; wait $qemu_pid 2>/dev/null || true" EXIT
               for attempt in $(seq 1 30); do
                 sleep 5
-                import -display "$DISPLAY" -window root /tmp/iso-boot.png
-                text="$(tesseract /tmp/iso-boot.png stdout 2>/dev/null || true)"
+                import -display "$DISPLAY" -window root "$GITHUB_WORKSPACE/dist/boot-evidence/iso-boot.png"
+                text="$(tesseract "$GITHUB_WORKSPACE/dist/boot-evidence/iso-boot.png" stdout 2>/dev/null || true)"
                 if printf "%s\n" "$text" | grep -qi "Personal Arch live recovery environment"; then
                   printf "%s\n" "$text"
                   exit 0
                 fi
+                if ! kill -0 "$qemu_pid" 2>/dev/null; then
+                  cat "$GITHUB_WORKSPACE/dist/boot-evidence/qemu-boot.log"
+                  exit 1
+                fi
               done
-              cat /tmp/qemu-boot.log
+              cat "$GITHUB_WORKSPACE/dist/boot-evidence/qemu-boot.log"
               printf "%s\n" "$text"
               exit 1
             '
@@ -87,7 +91,6 @@ jobs:
         with:
           name: personal-arch-boot-evidence
           path: |
-            /tmp/qemu-boot.log
-            /tmp/iso-boot.png
+            dist/boot-evidence/
           if-no-files-found: ignore
           retention-days: 7
