@@ -61,6 +61,7 @@ jobs:
           set -euo pipefail
           test -s "$ISO"
           ls -l /usr/share/OVMF /usr/share/edk2/x64 2>/dev/null || true
+          sudo chmod u+w dist
           mkdir -p dist/boot-evidence
           timeout 180 xvfb-run --auto-servernum --server-args="-screen 0 1280x800x24" \
             bash -euo pipefail -c '
