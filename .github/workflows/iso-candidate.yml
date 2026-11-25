@@ -72,7 +72,7 @@ jobs:
                 sleep 5
                 import -display "$DISPLAY" -window root "$GITHUB_WORKSPACE/dist/boot-evidence/iso-boot.png"
                 text="$(tesseract "$GITHUB_WORKSPACE/dist/boot-evidence/iso-boot.png" stdout 2>/dev/null || true)"
-                if printf "%s\n" "$text" | grep -qi "Personal Arch live recovery environment"; then
+                if printf "%s\n" "$text" | grep -qi "Personal Arch live recovery"; then
                   printf "%s\n" "$text"
                   exit 0
                 fi

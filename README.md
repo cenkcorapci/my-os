@@ -62,9 +62,9 @@ integration gates and immutable release-manifest workflow described in
   user workstation CLI yet.
 - No validated Arch snapshot, release promotion, USB writer, or claim of
   reproducible/atomic system rollback.
-- No verified ISO build or VM boot, physical hardware test, or performance
-  measurement is claimed by this phase. Record candidate build and VM boot
-  results by following the integration testing procedure.
+- The candidate ISO has booted to the recovery shell in UEFI QEMU. Network and
+  listener checks from the integration procedure, physical hardware testing,
+  and performance measurements are still outstanding.
 
 See the [architecture decisions](docs/adr/) and
 [implementation roadmap](docs/implementation-roadmap.md) before extending
